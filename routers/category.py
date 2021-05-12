@@ -23,7 +23,7 @@ def add_category(category_name: str, discount: str, db: Session = Depends(databa
                             detail=f'category already added')
 
     file.filename = f'{shortuuid.uuid()}.jpg'
-    with open("static/images/category_img/"+file.filename, 'wb') as img:
+    with open("static/images/category_img"+file.filename, 'wb') as img:
         shutil.copyfileobj(file.file, img)
     url = str("static/images/category_img/"+file.filename)
 
