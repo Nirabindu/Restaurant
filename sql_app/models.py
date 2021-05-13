@@ -62,6 +62,8 @@ class Items(database.Base):
     breakfast = relationship('Breakfast', back_populates='item')
     lunch = relationship('Lunch', back_populates='item')
     dinner = relationship('Dinner', back_populates='item')
+    rec = relationship('Recipe',back_populates = 'item')
+
     #addcart = relationship('Add_to_cart', back_populates='item')
 
 
@@ -124,3 +126,38 @@ class Ingredients(database.Base):
     ing_id = Column(BigInteger,primary_key = True, index = True)
     ingredient_name = Column(String(255),unique = True,nullable = False)
     ing_quantity = Column(Float)
+    
+    ing_for_recipe = relationship('IngredientsForRecipe',back_populates = 'ingredient')
+
+  
+
+
+class Recipe(database.Base):
+    __tablename__= 'recipe'
+    recipe_id = Column(BigInteger,primary_key = True,index = True)
+    item_name = Column(String(255))
+    item_id = Column(BigInteger,ForeignKey('items.item_id'))
+   
+    item = relationship('Items',back_populates = 'rec')
+    ing = relationship('IngredientsForRecipe',back_populates='reci')
+
+
+
+
+class IngredientsForRecipe(database.Base):
+    __tablename__='ingredientsForRecipe'
+    ingredientsForRecipe_id = Column(BigInteger,primary_key = True,index = True)
+    ing_id = Column(BigInteger,ForeignKey('ingredients.ing_id'))
+    ingredient_name = Column(String(255))
+    ingredients_quantity = Column(Float)
+    recipe_id = Column(BigInteger,ForeignKey('recipe.recipe_id'))
+
+
+    ingredient = relationship('Ingredients',back_populates='ing_for_recipe')
+    reci = relationship('Recipe',back_populates = 'ing')
+    
+
+
+
+
+

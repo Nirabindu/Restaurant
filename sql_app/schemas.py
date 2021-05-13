@@ -22,7 +22,6 @@ class Category(BaseModel):
     status: bool
     img: str
     create_at: datetime
-
     class Config():
         orm_mode = True
 
@@ -33,10 +32,8 @@ class SubCategory(BaseModel):
     status: bool
     create_at: datetime
     img: str
-
     class Config():
         orm_mode = True
-
 
 class Items(BaseModel):
     item_name: str
@@ -49,37 +46,31 @@ class Items(BaseModel):
     avalability: bool
     tax: float
     create_at: datetime
-
     class Config():
         orm_mode = True
 
 
 class Item_img(BaseModel):
     item_img: str
-
     class Config():
         orm_mode = True
 
 
 class Breakfast(BaseModel):
     breakfast_id: int
-
     class Config():
         orm_mode = True
-
-
 class Lunch(BaseModel):
     lunch_id: int
-
     class Config():
         orm_mode = True
+
 
 
 class Dinner(BaseModel):
     dinner_id: int
 
-    class Config():
-        orm_mode = True
+
 
 
 # showing data
@@ -90,7 +81,8 @@ class Show_category(Category):
 
 class Show_category_sub_category(Category):
     sub: List[SubCategory] = []
-
+    class Config():
+        orm_mode = True
 
 class Show_SubCategory_items(Items):
     sub_category: SubCategory
@@ -138,6 +130,47 @@ class Show_dinner(Dinner):
 #     order_date = datetime.utcnow()
 # class Show_cart(Items):
 #         item:List[Items]=[]
+
+
+
+class Ingredients(BaseModel):
+    ingredient_name:str
+    ing_quantity:float
+    class Config():
+        orm_mode = True
+
+class Recipe(BaseModel):
+    item_name:str
+    class Config():
+        orm_mode = True
+
+class IngredientsForRecipe(BaseModel):
+    ingredient_name:str
+    ingredients_quantity:float
+    class Config():
+        orm_mode = True
+
+class show_recipe(Recipe):
+    ing:List[IngredientsForRecipe]=[]
+    class Config():
+        orm_mode = True
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class Token(BaseModel):
