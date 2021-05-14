@@ -88,3 +88,22 @@ def show_recipe(db:Session = Depends(database.get_db),current_user : schemas.Use
 
     show_recipe = db.query(models.Recipe).all()
     return show_recipe
+
+
+@router.put('/edit_ingredients_for_recipe/')
+def edit_ingredients_recipe(ingredientsForRecipe_id:int,ingredients_quantity:float,db:Session = Depends(database.get_db),current_user : schemas.Users = Depends(oauth2.get_current_user)):
+
+    getting_ingredients_for_recipe = db.query(models.IngredientsForRecipe).filter(models.IngredientsForRecipe.ingredientsForRecipe_id == ingredientsForRecipe_id).first()
+    if not getting_ingredients_for_recipe:
+        return{'invalid'}
+    
+    getting_ingredients_for_recipe.ingredients_quantity = ingredients_quantity
+    db.commit()
+    db.refresh(getting_ingredients_for_recipe)
+    return 'update'
+
+
+
+
+ 
+    
