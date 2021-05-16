@@ -81,7 +81,7 @@ def adding_recipe(item_id:int,ing_id:int,ingredients_quantity:float, db:Session 
     db.refresh(adding_ingredients_to_recipe)
     return{'Added'}
 
-        
+#Show Recipe        
 
 @router.get('/show recipies/',response_model =List[schemas.show_recipe])
 def show_recipe(db:Session = Depends(database.get_db),current_user : schemas.Users = Depends(oauth2.get_current_user)):
@@ -89,6 +89,7 @@ def show_recipe(db:Session = Depends(database.get_db),current_user : schemas.Use
     show_recipe = db.query(models.Recipe).all()
     return show_recipe
 
+#Edit recipe 
 
 @router.put('/edit_ingredients_for_recipe/')
 def edit_ingredients_recipe(ingredientsForRecipe_id:int,ingredients_quantity:float,db:Session = Depends(database.get_db),current_user : schemas.Users = Depends(oauth2.get_current_user)):
