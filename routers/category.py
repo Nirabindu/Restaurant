@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends, status, File, UploadFile
 from sql_app import database, schemas, models
 from sqlalchemy.orm import Session
 from security import hashing, oauth2, tokens
-from typing import List, Optional,Dict
+from typing import List, Optional, Dict
 import shortuuid
 import shutil
 #from fastapi.encoders import jsonable_encoder
@@ -14,7 +14,7 @@ router = APIRouter(tags=['Add Category'])
 # adding Category
 
 @router.post('/add_category')
-def add_category(category_name: str, discount: str, db: Session = Depends(database.get_db), current_user: schemas.Users = Depends(oauth2.get_current_user), file: UploadFile = File(...)):
+def add_category(category_name: str, discount: Optional[float] = 0.0, db: Session = Depends(database.get_db), current_user: schemas.Users = Depends(oauth2.get_current_user), file: UploadFile = File(...)):
 
     category = db.query(models.Category).filter(
         models.Category.category_name == category_name).first()
@@ -72,7 +72,7 @@ def add_subcategory(category_id: int, sub_category_name: str, db: Session = Depe
 
 # adding items
 @router.post('/add_items')
-def addItem(sub_category_id: int, item_name: str, item_price: float, MRP: float, discount: float, item_description: str, item_features: str, tax: float, db: Session = Depends(database.get_db), current_user: schemas.Users = Depends(oauth2.get_current_user), file: List[UploadFile] = File(...)):
+def addItem(sub_category_id: int, item_name: str, item_price: float, MRP: float, item_description: str, item_features: str, tax: float,discount: Optional[float] = 0.0, db: Session = Depends(database.get_db), current_user: schemas.Users = Depends(oauth2.get_current_user), file: List[UploadFile] = File(...)):
 
     subcategory_id = db.query(models.SubCategory).filter(
         sub_category_id == models.SubCategory.sub_category_id).first()
@@ -230,6 +230,7 @@ def show_lunch(db: Session = Depends(database.get_db), current_user: schemas.Use
 def show_dinner(db: Session = Depends(database.get_db), current_user: schemas.Users = Depends(oauth2.get_current_user)):
     dinner = db.query(models.Dinner).all()
     return dinner
+
 
 '''
 # adding Items to cart

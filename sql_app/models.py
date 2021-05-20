@@ -21,7 +21,7 @@ class Category(database.Base):
     __tablename__ = 'category'
     category_id = Column(BigInteger, primary_key=True, index=True)
     category_name = Column(String(50), nullable=False, unique=True)
-    discount = Column(Float, nullable=False)
+    discount = Column(Float, nullable=True)
     status = Column(Boolean, default=True)
     img = Column(String(255))
     create_at = Column(DateTime, default=datetime.datetime.utcnow)
@@ -63,6 +63,7 @@ class Items(database.Base):
     lunch = relationship('Lunch', back_populates='item')
     dinner = relationship('Dinner', back_populates='item')
     rec = relationship('Recipe',back_populates = 'item')
+    made_item = relationship('Made_item',back_populates='item')
 
     #addcart = relationship('Add_to_cart', back_populates='item')
 
@@ -140,6 +141,7 @@ class Recipe(database.Base):
    
     item = relationship('Items',back_populates = 'rec')
     ing = relationship('IngredientsForRecipe',back_populates='reci')
+    # made_item = relationship('Made_item',back_populates='recipe')
 
 
 
@@ -157,7 +159,15 @@ class IngredientsForRecipe(database.Base):
     reci = relationship('Recipe',back_populates = 'ing')
     
 
-
-
+class Made_item(database.Base):
+    __tablename__='made_item'
+    made_item_id = Column(BigInteger,primary_key = True)
+    item_id = Column(BigInteger,ForeignKey('items.item_id'))
+    item_name = Column(String(255))
+    quantity = Column(Integer)
+    avalability = Column(Integer)
+    # recipe_id = Column(BigInteger,ForeignKey('recipe.recipe_id'))
+    item = relationship('Items',back_populates = 'made_item')
+    # recipe = relationship('Recipe',back_populates='made_item')
 
 

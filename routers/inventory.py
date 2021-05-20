@@ -1,4 +1,5 @@
 from fastapi import APIRouter,HTTPException,Depends
+from sqlalchemy.sql.functions import mode
 from sql_app import database,schemas,models
 from security import hashing, oauth2, tokens
 from sqlalchemy.orm import Session
@@ -25,19 +26,21 @@ def adding_ingredients(ingredient_name:str,units:float,db:Session = Depends(data
     checking_ingredient = db.query(models.Ingredients).filter(models.Ingredients.ingredient_name == ingredient_name).first()
     
     if checking_ingredient:
-        return{'Ingredients already added'}
+        checking_ingredient.ing_quantity = checking_ingredient.ing_quantity + (units * 1000)
+        db.commit()
+        return{'added'}
 
+    else:
+        new_ing_item = models.Ingredients(
+            ingredient_name = ingredient_name,
+            ing_quantity = units*1000
+        )
+        db.add(new_ing_item)
+        db.commit()
+        db.refresh(new_ing_item)
+        return {'ingredients added'}
 
-    new_ing_item = models.Ingredients(
-        ingredient_name = ingredient_name,
-        ing_quantity = units
-    )
-    db.add(new_ing_item)
-    db.commit()
-    db.refresh(new_ing_item)
-    return {'ingredients added'}
-
-
+   
 #adding Recipe
 
 @router.post('/Recipe/')
@@ -63,18 +66,17 @@ def adding_recipe(item_id:int,ing_id:int,ingredients_quantity:float, db:Session 
     if not get_ingredient:
         return{'Ingredient not found'}
 
-    # checking_ingredient_into_recipe = db.query(models.IngredientsForRecipe).filter(models.IngredientsForRecipe. == ing_id).first()
+    # checking_ingredient_into_recipe = db.query(models.IngredientsForRecipe).filter(models.IngredientsForRecipe.ing_id == ing_id).where(models.IngredientsForRecipe.recipe_id == models.Recipe.recipe_id).first()
 
     # if checking_ingredient_into_recipe:
-    #     return{'Ingredient alredy added'}
-    
+    #     return{'Ingredient already added'}
+    # else:
     adding_ingredients_to_recipe = models.IngredientsForRecipe(
         ing_id = get_ingredient.ing_id,
         ingredient_name = get_ingredient.ingredient_name,
         ingredients_quantity = ingredients_quantity,
         recipe_id = get_recipe_id.recipe_id,
-
-    )
+        ) 
 
     db.add(adding_ingredients_to_recipe)
     db.commit()
@@ -83,7 +85,7 @@ def adding_recipe(item_id:int,ing_id:int,ingredients_quantity:float, db:Session 
 
 #Show Recipe        
 
-@router.get('/show recipies/',response_model =List[schemas.show_recipe])
+@router.get('/show_recipes/',response_model =List[schemas.show_recipe])
 def show_recipe(db:Session = Depends(database.get_db),current_user : schemas.Users = Depends(oauth2.get_current_user)):
 
     show_recipe = db.query(models.Recipe).all()
@@ -101,10 +103,46 @@ def edit_ingredients_recipe(ingredientsForRecipe_id:int,ingredients_quantity:flo
     getting_ingredients_for_recipe.ingredients_quantity = ingredients_quantity
     db.commit()
     db.refresh(getting_ingredients_for_recipe)
-    return 'update'
+    return {'update'}
+
+#adding item to available table
+
+@router.post('/adding_made_items')
+def adding_to_made_item(item_id:int,quantity:int,db:Session = Depends(database.get_db),current_user : schemas.Users = Depends(oauth2.get_current_user)):
+    checking_made_item = db.query(models.Made_item).filter(models.Made_item.item_id == item_id).first()
+
+    getting_item = db.query(models.Items).filter(models.Items.item_id == item_id).first()
+
+    if  checking_made_item:
+        return{"Item already available"}
+
+    new_made_item = models.Made_item(
+        item_id = getting_item.item_id,
+        item_name = getting_item.item_name,
+        quantity = quantity,
+        avalability = quantity,
+
+    )
+
+    # getting recipe for made item
+
+    getting_recipe = db.query(models.Recipe).filter(models.Recipe.item_id == item_id).first()
+
+    if not getting_recipe:
+        return{'recipe for the item not found'}
+
+    else:
+        getting_ingredient_recipe = db.query(models.IngredientsForRecipe).filter(getting_recipe.recipe_id == models.IngredientsForRecipe.recipe_id).all()
+        
+        for i in range(quantity):
+            for j in getting_ingredient_recipe:
+                ing = db.query(models.Ingredients).filter(models.Ingredients.ing_id == j.ing_id).first()
+                ing.ing_quantity = ing.ing_quantity - j.ingredients_quantity
+                db.commit()
+
+    db.add(new_made_item)
+    db.commit()
+    db.refresh(new_made_item)
+    return{'Added'}
 
 
-
-
- 
-    

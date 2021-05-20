@@ -139,6 +139,10 @@ class Ingredients(BaseModel):
     class Config():
         orm_mode = True
 
+class Show_ingredients(Ingredients):
+    ingredient_name:str
+    ing_quantity:float        
+
 class Recipe(BaseModel):
     item_name:str
     class Config():
