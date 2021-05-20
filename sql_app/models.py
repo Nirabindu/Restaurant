@@ -1,5 +1,8 @@
+import re
 from sqlalchemy import Column, String, Integer, BigInteger, ForeignKey, Boolean, DateTime, Float
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql.expression import column
+from sqlalchemy.sql.sqltypes import DATE, Date
 from sql_app import database
 import datetime
 
@@ -64,6 +67,7 @@ class Items(database.Base):
     dinner = relationship('Dinner', back_populates='item')
     rec = relationship('Recipe',back_populates = 'item')
     made_item = relationship('Made_item',back_populates='item')
+    order = relationship('Orders',back_populates='item')
 
     #addcart = relationship('Add_to_cart', back_populates='item')
 
@@ -169,5 +173,17 @@ class Made_item(database.Base):
     # recipe_id = Column(BigInteger,ForeignKey('recipe.recipe_id'))
     item = relationship('Items',back_populates = 'made_item')
     # recipe = relationship('Recipe',back_populates='made_item')
+    order = relationship('Orders',back_populates='made_item')
 
 
+class Orders(database.Base):
+    __tablename__ = 'order'
+    order_id = Column(BigInteger,primary_key = True,index=True)
+    order_name = Column(String(255))
+    total_order = Column(Integer)
+    price = Column(Float)
+    order_date = Column(Date)
+    made_item_id = Column(BigInteger,ForeignKey('made_item.made_item_id'))
+    item_id = Column(BigInteger,ForeignKey ('items.item_id'))
+    made_item = relationship('Made_item',back_populates='order')
+    item = relationship('Items',back_populates='order')
