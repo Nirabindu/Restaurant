@@ -18,8 +18,7 @@ def adding_ingredients(ingredient_name: str, units: float, db: Session = Depends
         models.Ingredients.ingredient_name == ingredient_name).first()
 
     if checking_ingredient:
-        checking_ingredient.ing_quantity = checking_ingredient.ing_quantity + \
-            (units * 1000)
+        checking_ingredient.ing_quantity = checking_ingredient.ing_quantity + (units * 1000)
         db.commit()
         return{'added'}
 
