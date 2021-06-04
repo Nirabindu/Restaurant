@@ -57,7 +57,7 @@ def add_subcategory(category_id: int, sub_category_name: str, db: Session = Depe
     file.filename = f'{shortuuid.uuid()}.jpg'
     with open("static/images/subcat_img/"+file.filename, 'wb') as img:
         shutil.copyfileobj(file.file, img)
-    url = str("static/images/subcat_img/"+file.filename)
+    url = str("static\images\subcat_img/"+file.filename)
 
     new_sub_category = models.SubCategory(
         sub_category_name=sub_category_name,

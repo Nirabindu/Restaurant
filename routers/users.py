@@ -39,8 +39,8 @@ async def user_registration(request:schemas.Users,db:Session = Depends(database.
 
 
 @router.post('/login/')
-def user_login(request:oauth2.OAuth2PasswordRequestForm = Depends() ,db:Session  = Depends(database.get_db)):
-    user_email_check = db.query(models.Users).filter(models.Users.email == request.username).first()
+def user_login( request:schemas.User_login,db:Session  = Depends(database.get_db)):
+    user_email_check = db.query(models.Users).filter(models.Users.email == request.email).first()
     if not user_email_check:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Invalid Email id')
     if not hashing.Hash.verify(user_email_check.password,request.password):
@@ -51,3 +51,4 @@ def user_login(request:oauth2.OAuth2PasswordRequestForm = Depends() ,db:Session 
     
 
 
+# request:oauth2.OAuth2PasswordRequestForm = Depends()
